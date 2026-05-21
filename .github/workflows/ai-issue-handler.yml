@@ -1,0 +1,68 @@
+name: AI Issue Handler
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  handle-ai-label:
+    if: contains(fromJSON('["ai-fix", "ai-docs", "ai-test"]'), github.event.label.name)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Run Claude Code Action
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          allowed_tools: "Bash,Read,Write,Edit,Glob,Grep"
+          direct_prompt: |
+            You are working on a Java 17 / Spring Boot 3.x project.
+
+            ## YOUR TASK
+            Label "${{ github.event.label.name }}" was applied to issue #${{ github.event.issue.number }}.
+
+            Issue title: ${{ github.event.issue.title }}
+
+            Issue body:
+            ${{ github.event.issue.body }}
+
+            ## BEHAVIOR BY LABEL
+            - ai-fix  : Fix the bug described above
+            - ai-docs : Improve comments and Javadoc only (no logic changes)
+            - ai-test : Add missing JUnit/Mockito tests only
+
+            ## STRICTLY FORBIDDEN – never touch these files
+            - **/SecurityConfig.java
+            - **/WebMvcConfig.java
+            - **/application*.yml
+            - **/application*.properties
+            - **/db/migration/**
+            - **/migration/*.sql
+
+            ## REQUIRED STEPS
+            1. Create a new branch: feature/ai-${{ github.event.issue.number }}
+            2. Make only the changes necessary to resolve the issue
+            3. Commit with message starting with [AI]
+            4. Open a PR targeting the `develop` branch with:
+               - Title: [AI-GENERATED] ${{ github.event.issue.title }}
+               - Body must contain:
+                 issue: #${{ github.event.issue.number }}
+                 generated_by: claude-code-action
+                 label: ${{ github.event.label.name }}
+            5. All public methods must have Javadoc

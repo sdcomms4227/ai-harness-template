@@ -1,0 +1,25 @@
+# Safety Harness – AI 수정 차단 패턴
+# scope-guard 잡에서 이 패턴들을 검사합니다.
+# 형식: 정규식 (grep -E 호환)
+
+# 보안 설정
+SecurityConfig
+WebMvcConfig
+JwtFilter
+CorsConfig
+
+# 환경 설정
+application.*\.yml
+application.*\.properties
+bootstrap.*\.yml
+
+# DB 마이그레이션
+db/migration/
+migration/.*\.sql
+flyway/
+liquibase/
+
+# 인증/인가
+.*AuthenticationProvider
+.*AuthorizationFilter
+.*PermissionEvaluator

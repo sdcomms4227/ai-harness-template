@@ -1,0 +1,30 @@
+spring:
+  # TODO: 애플리케이션 이름을 변경하세요.
+  application:
+    name: harness
+
+  datasource:
+    # TODO: 실제 DB 접속 정보로 교체하거나 환경변수로 관리하세요.
+    url: jdbc:mariadb://localhost:3306/harness_db
+    username: ${DB_USERNAME:harness}
+    password: ${DB_PASSWORD:harness}
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MariaDBDialect
+
+  thymeleaf:
+    cache: false
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG

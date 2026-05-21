@@ -1,0 +1,46 @@
+# Data Masking 규칙
+# Claude Code Action이 코드를 외부 전송하기 전 적용되는 익명화 패턴
+
+patterns:
+  # 기관 식별자
+  - name: institution_code
+    pattern: '(기관코드|ORG_CODE|INST_CD)\s*[:=]\s*\S+'
+    replacement: '$1: [MASKED]'
+
+  # DB 접속 정보
+  - name: db_url
+    pattern: 'jdbc:(mysql|mariadb|oracle|tibero)://[^\s"''']+'
+    replacement: 'jdbc:$1://[MASKED_HOST]/[MASKED_DB]'
+
+  - name: db_credentials
+    pattern: '(username|password|url)\s*[:=]\s*[^\s#]+'
+    replacement: '$1: [MASKED]'
+
+  # API 키 / 시크릿
+  - name: api_key
+    pattern: '(api[_-]?key|secret[_-]?key|access[_-]?token)\s*[:=]\s*\S+'
+    replacement: '$1: [MASKED]'
+
+  # 개인 식별 정보
+  - name: resident_number
+    pattern: '\d{6}-[1-4]\d{6}'
+    replacement: '[RESIDENT_NO_MASKED]'
+
+  - name: phone_number
+    pattern: '01[0-9]-?\d{3,4}-?\d{4}'
+    replacement: '[PHONE_MASKED]'
+
+  - name: email
+    pattern: '[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}'
+    replacement: '[EMAIL_MASKED]'
+
+  # 내부 서버 IP
+  - name: internal_ip
+    pattern: '(192\.168|10\.\d+|172\.(1[6-9]|2\d|3[01]))\.\d+\.\d+'
+    replacement: '[INTERNAL_IP_MASKED]'
+
+# 마스킹 제외 대상 (테스트 코드 등)
+exclude_paths:
+  - src/test/**
+  - '**/*Test.java'
+  - '**/*Spec.java'

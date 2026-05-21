@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.14'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'checkstyle'
+    id 'com.github.spotbugs' version '6.1.7'
+}
+
+// TODO: 프로젝트에 맞게 group 과 description 을 변경하세요.
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+description = 'AI Safety Harness Project'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'com.h2database:h2'
+    testCompileOnly 'org.projectlombok:lombok'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+// ── Checkstyle ──────────────────────────────────────────────────────────
+checkstyle {
+    toolVersion = '10.21.4'
+    configFile = file("${rootDir}/checkstyle.xml")
+    ignoreFailures = false
+    showViolations = true
+}
+
+checkstyleMain.source = fileTree('src/main/java')
+checkstyleTest.source = fileTree('src/test/java')
+
+// ── SpotBugs ────────────────────────────────────────────────────────────
+spotbugs {
+    toolVersion = '4.9.3'
+    effort = 'max'
+    reportLevel = 'medium'
+    ignoreFailures = false
+    excludeFilter = file("${rootDir}/spotbugs-exclude.xml")
+}
+
+spotbugsMain {
+    reports {
+        html { required = true }
+        xml  { required = false }
+    }
+}
+
+// ── Test ─────────────────────────────────────────────────────────────────
+tasks.named('test') {
+    useJUnitPlatform()
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+}

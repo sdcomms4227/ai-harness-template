@@ -1,0 +1,17 @@
+# TODO: 아래 @your-github-username 을 실제 GitHub 사용자명으로 교체하세요.
+
+# 기본 리뷰어: 모든 파일
+*                                   @your-github-username
+
+# 보안/설정 파일: 시니어 2명 필수
+**/SecurityConfig.java              @your-github-username
+**/WebMvcConfig.java                @your-github-username
+**/application*.yml                 @your-github-username
+**/application*.properties          @your-github-username
+
+# DB 마이그레이션: 시니어 필수
+**/migration/**                     @your-github-username
+**/db/migration/**                  @your-github-username
+
+# GitHub Actions 워크플로우
+.github/**                          @your-github-username
